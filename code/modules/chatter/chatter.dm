@@ -7,7 +7,7 @@
 	// -> [4, 6, 7, ',', 4, 5, ',', '2', 7, 2, '!']
 	// "fuck,thissentenceissquashed" -> [4, ',', 21]
 
-	var/list/punctuation = list(",",":",";",".","?","!","\'","-")
+	var/list/punctuation = list(",",":",";",".","?","!","\'","-","~","´")
 	var/regex/R = regex("(\[\\l\\d]*)(\[^\\l\\d\\s])?", "g")
 	var/list/letter_count = list()
 	while(R.Find(message) != 0)
@@ -21,7 +21,7 @@
 			if (item in punctuation)
 				// simulate pausing in talking
 				// ignore semi-colons because of their use in HTML escaping
-				if (item in list(",", ":"))
+				if (item in list(",", ":", "~", "´"))
 					sleep(3)
 				if (item in list("!", "?", "."))
 					sleep(6)
