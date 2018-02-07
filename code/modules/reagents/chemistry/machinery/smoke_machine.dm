@@ -17,7 +17,7 @@
 	var/max_range = 3 // displayed max range is 3 * max range
 
 /datum/effect_system/smoke_spread/chem/smoke_machine/set_up(datum/reagents/carry, setting=1, efficiency=10, loc)
-	amount = setting * 3
+	amount = setting
 	carry.copy_to(chemholder, 20)
 	carry.remove_any(amount * 16 / efficiency)
 	location = loc
@@ -46,6 +46,8 @@
 	var/new_volume = REAGENTS_BASE_VOLUME
 	for(var/obj/item/stock_parts/matter_bin/B in component_parts)
 		new_volume += REAGENTS_BASE_VOLUME * B.rating
+	if(!reagents)
+		create_reagents(new_volume)
 	reagents.maximum_volume = new_volume
 	if(new_volume < reagents.total_volume)
 		reagents.reaction(loc, TOUCH) // if someone manages to downgrade it without deconstructing
@@ -70,7 +72,7 @@
 	var/smoke_test = locate(/obj/effect/particle_effect/smoke) in T
 	if(on && !smoke_test)
 		var/datum/effect_system/smoke_spread/chem/smoke_machine/smoke = new()
-		smoke.set_up(reagents, setting, efficiency, T)
+		smoke.set_up(reagents, setting*3, efficiency, T)
 		smoke.start()
 
 /obj/machinery/smoke_machine/attackby(obj/item/I, mob/user, params)

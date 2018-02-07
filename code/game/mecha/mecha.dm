@@ -215,7 +215,7 @@
 		step_energy_drain = normal_step_energy_drain
 		qdel(SM)
 	if(CP)
-		armor["energy"] += (CP.rating * 10) //Each level of capacitor protects the mech against emp by 10%
+		armor = armor.modifyRating(energy = (CP.rating * 10)) //Each level of capacitor protects the mech against emp by 10%
 		qdel(CP)
 
 ////////////////////////
@@ -571,9 +571,9 @@
 		if(bumpsmash && occupant) //Need a pilot to push the PUNCH button.
 			if(nextsmash < world.time)
 				obstacle.mech_melee_attack(src)
-				if(!obstacle || !obstacle.density)
-					step(src,dir)
 				nextsmash = world.time + smashcooldown
+				if(!obstacle || obstacle.CanPass(src,get_step(src,dir)))
+					step(src,dir)
 		if(isobj(obstacle))
 			var/obj/O = obstacle
 			if(!O.anchored)

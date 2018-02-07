@@ -85,12 +85,12 @@
 /datum/mutation/human/clumsy/on_acquiring(mob/living/carbon/human/owner)
 	if(..())
 		return
-	owner.add_disability(CLUMSY, GENETIC_MUTATION)
+	owner.add_trait(TRAIT_CLUMSY, GENETIC_MUTATION)
 
 /datum/mutation/human/clumsy/on_losing(mob/living/carbon/human/owner)
 	if(..())
 		return
-	owner.remove_disability(CLUMSY, GENETIC_MUTATION)
+	owner.remove_trait(TRAIT_CLUMSY, GENETIC_MUTATION)
 
 
 //Tourettes causes you to randomly stand in place and shout.
@@ -124,12 +124,12 @@
 /datum/mutation/human/deaf/on_acquiring(mob/living/carbon/human/owner)
 	if(..())
 		return
-	owner.add_disability(DEAF, GENETIC_MUTATION)
+	owner.add_trait(TRAIT_DEAF, GENETIC_MUTATION)
 
 /datum/mutation/human/deaf/on_losing(mob/living/carbon/human/owner)
 	if(..())
 		return
-	owner.remove_disability(DEAF, GENETIC_MUTATION)
+	owner.remove_trait(TRAIT_DEAF, GENETIC_MUTATION)
 
 
 //Monified turns you into a monkey.
@@ -146,3 +146,19 @@
 /datum/mutation/human/race/on_losing(mob/living/carbon/monkey/owner)
 	if(owner && istype(owner) && owner.stat != DEAD && (owner.dna.mutations.Remove(src)))
 		. = owner.humanize(TR_KEEPITEMS | TR_KEEPIMPLANTS | TR_KEEPORGANS | TR_KEEPDAMAGE | TR_KEEPVIRUS | TR_KEEPSE)
+
+//Italian makes you speak-a like Mario!
+
+/datum/mutation/human/italian
+	name = "Italian"
+	quality = NEGATIVE
+
+/datum/mutation/human/italian/on_acquiring(mob/living/carbon/human/owner)
+	if(..())
+		return
+	owner.add_trait(TRAIT_ITALIAN, GENETIC_MUTATION)
+
+/datum/mutation/human/italian/on_losing(mob/living/carbon/human/owner)
+	if(..())
+		return
+	owner.remove_trait(TRAIT_ITALIAN, GENETIC_MUTATION)

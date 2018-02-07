@@ -28,6 +28,7 @@
 #define SWEDISH		"Swedish"
 #define CHAV		"Chav"
 #define ELVIS		"Elvis"
+#define ITALIAN		"Italian"
 
 #define UI_CHANGED "ui changed"
 #define UE_CHANGED "ue changed"
@@ -123,6 +124,7 @@
 #define SPECIES_INORGANIC 32
 #define SPECIES_UNDEAD  33
 #define SPECIES_ROBOTIC 34
+#define NOEYES			35
 
 #define ORGAN_SLOT_BRAIN "brain"
 #define ORGAN_SLOT_APPENDIX "appendix"
