@@ -15,6 +15,7 @@
 //	use_power = NO_POWER_USE
 	max_integrity = 350
 	integrity_failure = 80
+	circuit = /obj/item/circuitboard/machine/rad_collector
 	var/obj/item/tank/internals/plasma/loaded_tank = null
 	var/last_power = 0
 	var/active = 0
@@ -65,7 +66,7 @@
 			loaded_tank.air_contents.gases[/datum/gas/carbon_dioxide][MOLES] += gasdrained*2
 			loaded_tank.air_contents.garbage_collect()
 			var/bitcoins_mined = min(last_power, (last_power*RAD_COLLECTOR_STORED_OUT)+1000)
-			SSresearch.science_tech.research_points += bitcoins_mined*RAD_COLLECTOR_MINING_CONVERSION_RATE
+			SSresearch.science_tech.add_point_type(TECHWEB_POINT_TYPE_DEFAULT, bitcoins_mined*RAD_COLLECTOR_MINING_CONVERSION_RATE)
 			last_power-=bitcoins_mined
 
 /obj/machinery/power/rad_collector/attack_hand(mob/user)
@@ -103,14 +104,15 @@
 			disconnect_from_network()
 
 /obj/machinery/power/rad_collector/attackby(obj/item/W, mob/user, params)
-	if(istype(W, /obj/item/device/analyzer) && loaded_tank)
-		atmosanalyzer_scan(loaded_tank.air_contents, user)
-	else if(istype(W, /obj/item/tank/internals/plasma))
+	if(istype(W, /obj/item/tank/internals/plasma))
 		if(!anchored)
 			to_chat(user, "<span class='warning'>[src] needs to be secured to the floor first!</span>")
 			return TRUE
 		if(loaded_tank)
 			to_chat(user, "<span class='warning'>There's already a plasma tank loaded!</span>")
+			return TRUE
+		if(panel_open)
+			to_chat(user, "<span class='warning'>Close the maintenance panel first!</span>")
 			return TRUE
 		if(!user.transferItemToLoc(W, src))
 			return
@@ -130,7 +132,14 @@
 		return ..()
 
 /obj/machinery/power/rad_collector/wrench_act(mob/living/user, obj/item/I)
-	default_unfasten_wrench(user, I, 0)
+	default_unfasten_wrench(user, I)
+	return TRUE
+
+/obj/machinery/power/rad_collector/screwdriver_act(mob/living/user, obj/item/I)
+	if(loaded_tank)
+		to_chat(user, "<span class='warning'>Remove the plasma tank first!</span>")
+	else
+		default_deconstruction_screwdriver(user, icon_state, icon_state, I)
 	return TRUE
 
 /obj/machinery/power/rad_collector/crowbar_act(mob/living/user, obj/item/I)
@@ -139,6 +148,8 @@
 			to_chat(user, "<span class='warning'>The controls are locked!</span>")
 			return TRUE
 		eject()
+		return TRUE
+	if(default_deconstruction_crowbar(I))
 		return TRUE
 	to_chat(user, "<span class='warning'>There isn't a tank loaded!</span>")
 	return TRUE
@@ -156,6 +167,10 @@
 	bitcoinmining = !bitcoinmining
 	to_chat(user, "<span class='warning'>You [bitcoinmining ? "enable":"disable"] the research point production feature of [src].</span>")
 	return TRUE
+
+/obj/machinery/power/rad_collector/analyzer_act(mob/living/user, obj/item/I)
+	if(loaded_tank)
+		loaded_tank.analyzer_act(user, I)
 
 /obj/machinery/power/rad_collector/examine(mob/user)
 	. = ..()
