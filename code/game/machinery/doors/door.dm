@@ -3,7 +3,6 @@
 	desc = "It opens and closes."
 	icon = 'icons/obj/doors/Doorint.dmi'
 	icon_state = "door1"
-	anchored = TRUE
 	opacity = 1
 	density = TRUE
 	layer = OPEN_DOOR_LAYER
@@ -16,7 +15,7 @@
 	interaction_flags_atom = INTERACT_ATOM_UI_INTERACT
 
 	var/secondsElectrified = 0
-	var/shockedby = list()
+	var/shockedby
 	var/visible = TRUE
 	var/operating = FALSE
 	var/glass = FALSE
@@ -179,7 +178,7 @@
 	else if(istype(I, /obj/item/weldingtool))
 		try_to_weld(I, user)
 		return 1
-	else if(!(I.flags_1 & NOBLUDGEON_1) && user.a_intent != INTENT_HARM)
+	else if(!(I.item_flags & NOBLUDGEON) && user.a_intent != INTENT_HARM)
 		try_to_activate_door(user)
 		return 1
 	return ..()
@@ -216,7 +215,7 @@
 	if(prob(severity*10 - 20))
 		if(secondsElectrified == 0)
 			secondsElectrified = -1
-			shockedby += "\[[time_stamp()]\]EM Pulse"
+			LAZYADD(shockedby, "\[[time_stamp()]\]EM Pulse")
 			addtimer(CALLBACK(src, .proc/unelectrify), 300)
 
 /obj/machinery/door/proc/unelectrify()
