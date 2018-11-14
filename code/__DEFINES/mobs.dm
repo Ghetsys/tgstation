@@ -138,14 +138,6 @@
 #define SANITY_CRAZY 25
 #define SANITY_INSANE 0
 
-//Beauty levels of areas for carbons
-#define BEAUTY_LEVEL_HORRID -100
-#define BEAUTY_LEVEL_BAD -66
-#define BEAUTY_LEVEL_MEH -33
-#define BEAUTY_LEVEL_DECENT 33
-#define BEAUTY_LEVEL_GOOD 66
-#define BEAUTY_LEVEL_GREAT 100
-
 //Nutrition levels for humans
 #define NUTRITION_LEVEL_FAT 600
 #define NUTRITION_LEVEL_FULL 550
@@ -162,6 +154,9 @@
 #define DISGUST_LEVEL_DISGUSTED 75
 #define DISGUST_LEVEL_VERYGROSS 50
 #define DISGUST_LEVEL_GROSS 25
+
+//Used as an upper limit for species that continuously gain nutriment
+#define NUTRITION_LEVEL_ALMOST_FULL 535
 
 //Slime evolution threshold. Controls how fast slimes can split/grow
 #define SLIME_EVOLUTION_THRESHOLD 10
@@ -263,3 +258,11 @@
 // AI Toggles
 #define AI_CAMERA_LUMINOSITY	5
 #define AI_VOX // Comment out if you don't want VOX to be enabled and have players download the voice sounds.
+
+// /obj/item/bodypart on_mob_life() retval flag
+#define BODYPART_LIFE_UPDATE_HEALTH (1<<0)
+
+#define MAX_REVIVE_FIRE_DAMAGE 180
+#define MAX_REVIVE_BRUTE_DAMAGE 180
+
+#define HUMAN_FIRE_STACK_ICON_NUM	3

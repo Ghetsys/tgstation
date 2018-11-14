@@ -52,7 +52,7 @@
 /obj/item/pinpointer/nuke/proc/switch_mode_to(new_mode)
 	if(isliving(loc))
 		var/mob/living/L = loc
-		to_chat(L, "<span class='userdanger'>Your [name] beeps as it reconfigures its tracking algorithms.</span>")
+		to_chat(L, "<span class='userdanger'>Your [name] beeps as it reconfigures it's tracking algorithms.</span>")
 		playsound(L, 'sound/machines/triple_beep.ogg', 50, 1)
 	mode = new_mode
 	scan_for_target()
@@ -67,6 +67,11 @@
 	desc = "An integrated tracking device, jury-rigged to search for living Syndicate operatives."
 	item_flags = NODROP
 	flags_1 = NONE
+
+/obj/item/pinpointer/syndicate_cyborg/cyborg_unequip(mob/user)
+	if(!active)
+		return
+	toggle_on()
 
 /obj/item/pinpointer/syndicate_cyborg/scan_for_target()
 	target = null

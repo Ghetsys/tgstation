@@ -80,9 +80,10 @@
 		return "no reagents"
 
 	var/list/data = list()
+	var/seperator
 	for(var/r in reagent_list) //no reagents will be left behind
 		var/datum/reagent/R = r
-		data += "[R.id] ([round(R.volume, 0.1)]u)"
+		data += "[seperator ? " | " : null][R.id] ([round(R.volume, 0.1)]u)"
 		//Using IDs because SOME chemicals (I'm looking at you, chlorhydrate-beer) have the same names as other chemicals.
 	return english_list(data)
 
@@ -160,20 +161,28 @@
 
 	return master
 
-/datum/reagents/proc/trans_to(obj/target, amount=1, multiplier=1, preserve_data=1, no_react = 0)//if preserve_data=0, the reagents data will be lost. Usefull if you use data for some strange stuff and don't want it to be transferred.
+/datum/reagents/proc/trans_to(obj/target, amount=1, multiplier=1, preserve_data=1, no_react = 0, mob/transfered_by)//if preserve_data=0, the reagents data will be lost. Usefull if you use data for some strange stuff and don't want it to be transferred.
 	var/list/cached_reagents = reagent_list
 	if(!target || !total_volume)
 		return
 	if(amount < 0)
 		return
 
+	var/atom/target_atom
 	var/datum/reagents/R
 	if(istype(target, /datum/reagents))
 		R = target
+		target_atom = R.my_atom
 	else
 		if(!target.reagents)
 			return
 		R = target.reagents
+		target_atom = target
+
+	if(transfered_by && target_atom)
+		target_atom.add_hiddenprint(transfered_by) //log prints so admins can figure out who touched it last.
+		log_combat(transfered_by, target_atom, "transferred reagents ([log_list()]) from [my_atom] to")
+
 	amount = min(min(amount, src.total_volume), R.maximum_volume-R.total_volume)
 	var/part = amount / src.total_volume
 	var/trans_data = null
@@ -303,12 +312,12 @@
 							need_mob_update += R.addiction_act_stage4(C)
 						if(40 to INFINITY)
 							to_chat(C, "<span class='notice'>You feel like you've gotten over your need for [R.name].</span>")
-							C.SendSignal(COMSIG_CLEAR_MOOD_EVENT, "[R.id]_addiction")
+							SEND_SIGNAL(C, COMSIG_CLEAR_MOOD_EVENT, "[R.id]_addiction")
 							cached_addictions.Remove(R)
 		addiction_tick++
 	if(C && need_mob_update) //some of the metabolized reagents had effects on the mob that requires some updates.
 		C.updatehealth()
-		C.update_canmove()
+		C.update_mobility()
 		C.update_stamina()
 	update_total()
 
@@ -406,10 +415,10 @@
 			for(var/V in possible_reactions)
 				var/datum/chemical_reaction/competitor = V
 				if(selected_reaction.is_cold_recipe) //if there are no recipe conflicts, everything in possible_reactions will have this same value for is_cold_reaction. warranty void if assumption not met.
-					if(competitor.required_temp < selected_reaction.required_temp)
+					if(competitor.required_temp <= selected_reaction.required_temp)
 						selected_reaction = competitor
 				else
-					if(competitor.required_temp > selected_reaction.required_temp)
+					if(competitor.required_temp >= selected_reaction.required_temp)
 						selected_reaction = competitor
 			var/list/cached_required_reagents = selected_reaction.required_reagents
 			var/list/cached_results = selected_reaction.results
@@ -551,7 +560,7 @@
 		WARNING("[my_atom] attempted to add a reagent called '[reagent]' which doesn't exist. ([usr])")
 		return FALSE
 
- 	update_total()
+	update_total()
 	var/cached_total = total_volume
 	if(cached_total + amount > maximum_volume)
 		amount = (maximum_volume - cached_total) //Doesnt fit in. Make it disappear. Shouldnt happen. Will happen.
@@ -595,13 +604,13 @@
 		R.data = data
 		R.on_new(data)
 
+	if(isliving(my_atom))
+		R.on_mob_add(my_atom) //Must occur befor it could posibly run on_mob_delete
 	update_total()
 	if(my_atom)
 		my_atom.on_reagent_change(ADD_REAGENT)
 	if(!no_react)
 		handle_reactions()
-	if(isliving(my_atom))
-		R.on_mob_add(my_atom)
 	return TRUE
 
 /datum/reagents/proc/add_reagent_list(list/list_reagents, list/data=null) // Like add_reagent but you can enter a list. Format it like this: list("toxin" = 10, "beer" = 15)

@@ -1,7 +1,7 @@
 
 /* EMOTE DATUMS */
 /datum/emote/living
-	mob_type_allowed_typecache = list(/mob/living)
+	mob_type_allowed_typecache = /mob/living
 	mob_type_blacklist_typecache = list(/mob/living/simple_animal/slime, /mob/living/brain)
 
 /datum/emote/living/blush
@@ -60,7 +60,7 @@
 
 /datum/emote/living/cough/can_run_emote(mob/user, status_check = TRUE)
 	. = ..()
-	if(user.reagents.get_reagent("menthol"))
+	if(user.reagents && (user.reagents.get_reagent("menthol") || user.reagents.get_reagent("peppermint_patty")))
 		return FALSE
 
 /datum/emote/living/dance
@@ -243,7 +243,7 @@
 		if(H.get_num_arms() == 0)
 			if(H.get_num_legs() != 0)
 				message_param = "tries to point at %t with a leg, <span class='userdanger'>falling down</span> in the process!"
-				H.Knockdown(20)
+				H.Paralyze(20)
 			else
 				message_param = "<span class='userdanger'>bumps [user.p_their()] head on the ground</span> trying to motion towards %t."
 				H.adjustBrainLoss(5)
@@ -347,7 +347,7 @@
 	. = ..()
 	if(. && isliving(user))
 		var/mob/living/L = user
-		L.Knockdown(200)
+		L.Paralyze(200)
 
 /datum/emote/living/sway
 	key = "sway"
@@ -411,6 +411,8 @@
 /datum/emote/living/custom/run_emote(mob/user, params, type_override = null)
 	if(jobban_isbanned(user, "emote"))
 		to_chat(user, "You cannot send custom emotes (banned).")
+		return FALSE
+	else if(QDELETED(user))
 		return FALSE
 	else if(user.client && user.client.prefs.muted & MUTE_IC)
 		to_chat(user, "You cannot send IC messages (muted).")

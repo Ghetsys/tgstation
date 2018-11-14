@@ -112,8 +112,7 @@
 
 /obj/item/areaeditor/blueprints/proc/get_images(turf/T, viewsize)
 	. = list()
-	for(var/tt in RANGE_TURFS(viewsize, T))
-		var/turf/TT = tt
+	for(var/turf/TT in range(viewsize, T))
 		if(TT.blueprint_data)
 			. += TT.blueprint_data
 
@@ -151,12 +150,12 @@
 		return AREA_SPACE
 	var/list/SPECIALS = list(
 		/area/shuttle,
-		/area/admin,
-		/area/arrival,
 		/area/centcom,
 		/area/asteroid,
 		/area/tdome,
-		/area/wizard_station
+		/area/wizard_station,
+		/area/hilbertshotel,
+		/area/hilbertshotelstorage
 	)
 	for (var/type in SPECIALS)
 		if ( istype(A,type) )

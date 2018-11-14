@@ -66,11 +66,11 @@
 	M.buckled = src
 	M.setDir(dir)
 	buckled_mobs |= M
-	M.update_canmove()
+	M.update_mobility()
 	M.throw_alert("buckled", /obj/screen/alert/restrained/buckled)
 	post_buckle_mob(M)
 
-	SendSignal(COMSIG_MOVABLE_BUCKLE, M, force)
+	SEND_SIGNAL(src, COMSIG_MOVABLE_BUCKLE, M, force)
 	return TRUE
 
 /obj/buckle_mob(mob/living/M, force = FALSE, check_loc = TRUE)
@@ -85,10 +85,10 @@
 		. = buckled_mob
 		buckled_mob.buckled = null
 		buckled_mob.anchored = initial(buckled_mob.anchored)
-		buckled_mob.update_canmove()
+		buckled_mob.update_mobility()
 		buckled_mob.clear_alert("buckled")
 		buckled_mobs -= buckled_mob
-		SendSignal(COMSIG_MOVABLE_UNBUCKLE, buckled_mob, force)
+		SEND_SIGNAL(src, COMSIG_MOVABLE_UNBUCKLE, buckled_mob, force)
 
 		post_unbuckle_mob(.)
 

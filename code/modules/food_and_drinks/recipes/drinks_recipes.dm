@@ -588,7 +588,7 @@
 	results = list("quintuple_sec" = 15)
 	required_reagents = list("quadruple_sec" = 5, "clownstears" = 5, "syndicatebomb" = 5)
 	mix_message = "Judgement is upon you."
-	mix_message = 'sound/items/airhorn2.ogg'
+	mix_sound = 'sound/items/airhorn2.ogg'
 
 /datum/chemical_reaction/bastion_bourbon
 	name = "Bastion Bourbon"
@@ -632,6 +632,13 @@
 	required_reagents = list("rice" = 10)
 	required_catalysts = list("enzyme" = 5)
 	mix_message = "The rice grains ferment into a clear, sweet-smelling liquid."
+
+/datum/chemical_reaction/peppermint_patty
+	name = "Peppermint Patty"
+	id = "peppermint_patty"
+	results = list("peppermint_patty" = 10)
+	required_reagents = list("hot_coco" = 6, "creme_de_cacao" = 1, "creme_de_menthe" = 1, "vodka" = 1, "menthol" = 1)
+	mix_message = "The coco turns mint green just as the strong scent hits your nose."
 
 /datum/chemical_reaction/alexander
 	name = "Alexander"

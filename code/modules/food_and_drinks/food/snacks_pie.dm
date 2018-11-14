@@ -49,14 +49,14 @@
 		else
 			creamoverlay.icon_state = "creampie_human"
 		if(stunning)
-			H.Knockdown(20) //splat!
+			H.Paralyze(20) //splat!
 		H.adjust_blurriness(1)
 		H.visible_message("<span class='warning'>[H] is creamed by [src]!</span>", "<span class='userdanger'>You've been creamed by [src]!</span>")
 		playsound(H, "desceration", 50, TRUE)
 		if(!H.creamed) // one layer at a time
 			H.add_overlay(creamoverlay)
 			H.creamed = TRUE
-			H.SendSignal(COMSIG_ADD_MOOD_EVENT, "creampie", /datum/mood_event/creampie)
+			SEND_SIGNAL(H, COMSIG_ADD_MOOD_EVENT, "creampie", /datum/mood_event/creampie)
 	qdel(src)
 
 /obj/item/reagent_containers/food/snacks/pie/cream/nostun

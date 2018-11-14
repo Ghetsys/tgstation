@@ -50,13 +50,14 @@
 					var/obj/item/clothing/shoes/magboots/M = H.shoes
 					if(M.magpulse)
 						continue
-				H.apply_effect(20, EFFECT_KNOCKDOWN, 0)
+				H.apply_effect(20, EFFECT_PARALYZE, 0)
 				step_towards(H,pull)
 				step_towards(H,pull)
 				step_towards(H,pull)
 	return
 
 /obj/item/twohanded/singularityhammer/afterattack(atom/A as mob|obj|turf|area, mob/user, proximity)
+	. = ..()
 	if(!proximity)
 		return
 	if(wielded)

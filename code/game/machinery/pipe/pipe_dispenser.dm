@@ -34,7 +34,8 @@
 /obj/machinery/pipedispenser/Topic(href, href_list)
 	if(..())
 		return 1
-	if(!anchored|| !usr.canmove || usr.stat || usr.restrained() || !in_range(loc, usr))
+	var/mob/living/L = usr
+	if(!anchored || (istype(L) && !(L.mobility_flags & MOBILITY_UI)) || usr.stat || usr.restrained() || !in_range(loc, usr))
 		usr << browse(null, "window=pipedispenser")
 		return 1
 	usr.set_machine(src)
@@ -42,6 +43,8 @@
 	if(href_list["makepipe"])
 		if(wait < world.time)
 			var/p_type = text2path(href_list["makepipe"])
+			if (!verify_recipe(GLOB.atmos_pipe_recipes, p_type))
+				return
 			var/p_dir = text2num(href_list["dir"])
 			var/obj/item/pipe/P = new (loc, p_type, p_dir)
 			P.setPipingLayer(piping_layer)
@@ -66,6 +69,15 @@
 	else
 		return ..()
 
+/obj/machinery/pipedispenser/proc/verify_recipe(recipes, path)
+	for(var/category in recipes)
+		var/list/cat_recipes = recipes[category]
+		for(var/i in cat_recipes)
+			var/datum/pipe_info/info = i
+			if (path == info.id)
+				return TRUE
+	return FALSE
+
 /obj/machinery/pipedispenser/wrench_act(mob/living/user, obj/item/I)
 	if(default_unfasten_wrench(user, I, 40))
 		user << browse(null, "window=pipedispenser")
@@ -83,7 +95,7 @@
 
 //Allow you to drag-drop disposal pipes and transit tubes into it
 /obj/machinery/pipedispenser/disposal/MouseDrop_T(obj/structure/pipe, mob/usr)
-	if(!usr.canmove || usr.stat || usr.restrained())
+	if(!usr.incapacitated())
 		return
 
 	if (!istype(pipe, /obj/structure/disposalconstruct) && !istype(pipe, /obj/structure/c_transit_tube) && !istype(pipe, /obj/structure/c_transit_tube_pod))
@@ -124,6 +136,8 @@
 	if(href_list["dmake"])
 		if(wait < world.time)
 			var/p_type = text2path(href_list["dmake"])
+			if (!verify_recipe(GLOB.disposal_pipe_recipes, p_type))
+				return
 			var/obj/structure/disposalconstruct/C = new (loc, p_type)
 
 			if(!C.can_place())

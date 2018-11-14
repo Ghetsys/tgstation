@@ -5,11 +5,13 @@
 	icon_state = "floor1"
 	random_icon_states = list("floor1", "floor2", "floor3", "floor4", "floor5", "floor6", "floor7")
 	blood_state = BLOOD_STATE_HUMAN
-	bloodiness = MAX_SHOE_BLOODINESS
-	beauty = -60
+	bloodiness = BLOOD_AMOUNT_PER_DECAL
 
 /obj/effect/decal/cleanable/blood/replace_decal(obj/effect/decal/cleanable/blood/C)
 	C.add_blood_DNA(return_blood_DNA())
+	if (bloodiness)
+		if (C.bloodiness < MAX_SHOE_BLOODINESS)
+			C.bloodiness += bloodiness
 	return ..()
 
 /obj/effect/decal/cleanable/blood/old
@@ -19,7 +21,7 @@
 
 /obj/effect/decal/cleanable/blood/old/Initialize(mapload, list/datum/disease/diseases)
 	icon_state += "-old" //This IS necessary because the parent /blood type uses icon randomization.
-	add_blood_DNA(list("Non-human DNA" = "A+")) // Needs to happen before ..()
+	add_blood_DNA(list("Non-human DNA" = random_blood_type())) // Needs to happen before ..()
 	return ..()
 
 /obj/effect/decal/cleanable/blood/splatter
@@ -55,6 +57,11 @@
 
 /obj/effect/decal/cleanable/blood/gibs/ex_act(severity, target)
 	return
+
+/obj/effect/decal/cleanable/blood/gibs/Crossed(mob/living/L)
+	if(istype(L) && has_gravity(loc))
+		playsound(loc, 'sound/effects/gib_step.ogg', L.has_trait(TRAIT_LIGHT_STEP) ? 20 : 50, 1)
+	. = ..()
 
 /obj/effect/decal/cleanable/blood/gibs/proc/streak(list/directions)
 	set waitfor = 0
@@ -97,7 +104,7 @@
 	. = ..()
 	setDir(pick(1,2,4,8))
 	icon_state += "-old"
-	add_blood_DNA(list("Non-human DNA" = "A+"))
+	add_blood_DNA(list("Non-human DNA" = random_blood_type()))
 
 /obj/effect/decal/cleanable/blood/drip
 	name = "drips of blood"

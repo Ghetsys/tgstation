@@ -1,7 +1,7 @@
 // SUIT STORAGE UNIT /////////////////
 /obj/machinery/suit_storage_unit
 	name = "suit storage unit"
-	desc = "An industrial unit made to hold space suits. It comes with a built-in UV cauterization mechanism. A small warning label advises that organic matter should not be placed into the unit."
+	desc = "An industrial unit made to hold and decontaminate irradiated equipment. It comes with a built-in UV cauterization mechanism. A small warning label advises that organic matter should not be placed into the unit."
 	icon = 'icons/obj/machines/suit_storage.dmi'
 	icon_state = "close"
 	density = TRUE
@@ -178,9 +178,13 @@
 		new /obj/item/stack/sheet/metal (loc, 2)
 	qdel(src)
 
-/obj/machinery/suit_storage_unit/MouseDrop_T(atom/A, mob/user)
-	if(user.stat || user.lying || !Adjacent(user) || !Adjacent(A) || !isliving(A))
+/obj/machinery/suit_storage_unit/MouseDrop_T(atom/A, mob/living/user)
+	if(!istype(user) || user.stat || !Adjacent(user) || !Adjacent(A) || !isliving(A))
 		return
+	if(isliving(user))
+		var/mob/living/L = user
+		if(!(L.mobility_flags & MOBILITY_STAND))
+			return
 	var/mob/living/target = A
 	if(!state_open)
 		to_chat(user, "<span class='warning'>The unit's doors are shut!</span>")
@@ -245,7 +249,7 @@
 				visible_message("<span class='warning'>[src]'s door slides open, barraging you with the nauseating smell of charred flesh.</span>")
 			playsound(src, 'sound/machines/airlockclose.ogg', 25, 1)
 			for(var/obj/item/I in src) //Scorches away blood and forensic evidence, although the SSU itself is unaffected
-				I.SendSignal(COMSIG_COMPONENT_CLEAN_ACT, CLEAN_STRONG)
+				SEND_SIGNAL(I, COMSIG_COMPONENT_CLEAN_ACT, CLEAN_STRONG)
 				var/datum/component/radioactive/contamination = I.GetComponent(/datum/component/radioactive)
 				if(contamination)
 					qdel(contamination)
@@ -340,6 +344,7 @@
 
 	if(panel_open && is_wire_tool(I))
 		wires.interact(user)
+		return
 	if(!state_open)
 		if(default_deconstruction_screwdriver(user, "panel", "close", I))
 			return

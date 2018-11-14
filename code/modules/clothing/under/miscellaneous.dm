@@ -38,7 +38,7 @@
 	can_adjust = FALSE
 
 /obj/item/clothing/under/roman
-	name = "roman armor"
+	name = "\improper Roman armor"
 	desc = "Ancient Roman armor. Made of metallic and leather straps."
 	icon_state = "roman"
 	item_color = "roman"
@@ -202,7 +202,7 @@
 	desc = "A formal black suit and red tie, intended for the station's finest."
 	icon_state = "really_black_suit"
 	item_state = "bl_suit"
-	item_color = "black_suit"
+	item_color = "really_black_suit"
 
 /obj/item/clothing/under/suit_jacket/female
 	name = "executive suit"
@@ -263,7 +263,7 @@
 
 /obj/item/clothing/under/suit_jacket/white
 	name = "white suit"
-	desc = "A white suit and jacket with a blue shirt. You wanna play rough? OKAY!."
+	desc = "A white suit and jacket with a blue shirt. You wanna play rough? OKAY!"
 	icon_state = "white_suit"
 	item_state = "white_suit"
 	item_color = "white_suit"
@@ -294,6 +294,7 @@
 	body_parts_covered = CHEST|GROIN|ARMS
 	fitted = FEMALE_UNIFORM_TOP
 	can_adjust = FALSE
+	custom_price = 25
 
 /obj/item/clothing/under/skirt/red
 	name = "red skirt"
@@ -304,6 +305,7 @@
 	body_parts_covered = CHEST|GROIN|ARMS
 	fitted = FEMALE_UNIFORM_TOP
 	can_adjust = FALSE
+	custom_price = 25
 
 /obj/item/clothing/under/skirt/purple
 	name = "purple skirt"
@@ -314,6 +316,7 @@
 	body_parts_covered = CHEST|GROIN|ARMS
 	fitted = FEMALE_UNIFORM_TOP
 	can_adjust = FALSE
+	custom_price = 25
 
 
 /obj/item/clothing/under/schoolgirl
@@ -351,6 +354,7 @@
 	item_state = "lb_suit"
 	item_color = "overalls"
 	can_adjust = FALSE
+	custom_price = 20
 
 /obj/item/clothing/under/pirate
 	name = "pirate outfit"
@@ -382,7 +386,7 @@
 	icon_state = "kilt"
 	item_state = "kilt"
 	item_color = "kilt"
-	body_parts_covered = CHEST|GROIN|FEET
+	body_parts_covered = CHEST|GROIN|LEGS|FEET
 	fitted = FEMALE_UNIFORM_TOP
 	can_adjust = FALSE
 
@@ -473,6 +477,7 @@
 	icon_state = "striped_dress"
 	item_state = "stripeddress"
 	item_color = "striped_dress"
+	body_parts_covered = CHEST|GROIN|ARMS
 	fitted = FEMALE_UNIFORM_FULL
 	can_adjust = FALSE
 
@@ -482,6 +487,7 @@
 	icon_state = "sailor_dress"
 	item_state = "sailordress"
 	item_color = "sailor_dress"
+	body_parts_covered = CHEST|GROIN|ARMS
 	fitted = FEMALE_UNIFORM_TOP
 	can_adjust = FALSE
 
@@ -528,6 +534,7 @@
 	fitted = FEMALE_UNIFORM_TOP
 	can_adjust = TRUE
 	alt_covers_chest = TRUE
+	custom_price = 25
 
 /obj/item/clothing/under/plaid_skirt/blue
 	name = "blue plaid skirt"
@@ -555,6 +562,7 @@
 	icon_state = "ysing"
 	item_state = "ysing"
 	item_color = "ysing"
+	body_parts_covered = CHEST|GROIN|ARMS
 	fitted = NO_FEMALE_UNIFORM
 	alternate_worn_layer = ABOVE_SHOES_LAYER
 	can_adjust = FALSE
@@ -565,6 +573,7 @@
 	icon_state = "bsing"
 	item_state = "bsing"
 	item_color = "bsing"
+	body_parts_covered = CHEST|GROIN|ARMS
 	alternate_worn_layer = ABOVE_SHOES_LAYER
 	fitted = FEMALE_UNIFORM_TOP
 	can_adjust = FALSE
@@ -594,6 +603,7 @@
 	desc = "Cute space ninja senpai not included."
 	icon_state = "geisha"
 	item_color = "geisha"
+	body_parts_covered = CHEST|GROIN|ARMS
 	can_adjust = FALSE
 
 /obj/item/clothing/under/villain
@@ -667,7 +677,7 @@
 	icon = 'icons/obj/device.dmi'
 
 /obj/item/clothing/under/rank/security/navyblue/russian
-	name = "russian officer's uniform"
+	name = "\improper Russian officer's uniform"
 	desc = "The latest in fashionable russian outfits."
 	icon_state = "hostanclothes"
 	item_state = "hostanclothes"
@@ -722,6 +732,14 @@
 	fitted = NO_FEMALE_UNIFORM
 	can_adjust = FALSE
 
+/obj/item/clothing/under/gondola
+	name = "gondola hide suit"
+	desc = "Now you're cooking."
+	icon_state = "gondola"
+	item_state = "lb_suit"
+	item_color = "gondola"
+	can_adjust = FALSE
+
 /obj/item/clothing/under/skeleton
 	name = "skeleton jumpsuit"
 	desc = "A black jumpsuit with a white bone pattern printed on it. Spooky!"
@@ -732,35 +750,3 @@
 	fitted = NO_FEMALE_UNIFORM
 	can_adjust = FALSE
 	resistance_flags = NONE
-
-/obj/item/clothing/under/swimsuit
-	name = "black swimsuit"
-	desc = "Perfect for the beach episode."
-	icon_state = "swim_black"
-	item_state = "bl_suit"
-	item_color = "swim_black"
-	can_adjust = FALSE
-
-/obj/item/clothing/under/swimsuit/blue
-	name = "blue swimsuit"
-	icon_state = "swim_blue"
-	item_state = "b_suit"
-	item_color = "swim_blue"
-
-/obj/item/clothing/under/swimsuit/green
-	name = "green swimsuit"
-	icon_state = "swim_green"
-	item_state = "g_suit"
-	item_color = "swim_green"
-
-/obj/item/clothing/under/swimsuit/purple
-	name = "purple swimsuit"
-	icon_state = "swim_purple"
-	item_state = "p_suit"
-	item_color = "swim_purple"
-
-/obj/item/clothing/under/swimsuit/red
-	name = "red swimsuit"
-	icon_state = "swim_red"
-	item_state = "r_suit"
-	item_color = "swim_red"

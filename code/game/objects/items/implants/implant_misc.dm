@@ -31,14 +31,17 @@
 	return dat
 
 /obj/item/implant/adrenalin/activate()
+	. = ..()
 	uses--
 	to_chat(imp_in, "<span class='notice'>You feel a sudden surge of energy!</span>")
 	imp_in.SetStun(0)
 	imp_in.SetKnockdown(0)
 	imp_in.SetUnconscious(0)
+	imp_in.SetParalyzed(0)
+	imp_in.SetImmobilized(0)
 	imp_in.adjustStaminaLoss(-75)
-	imp_in.lying = 0
-	imp_in.update_canmove()
+	imp_in.set_resting(FALSE)
+	imp_in.update_mobility()
 
 	imp_in.reagents.add_reagent("synaptizine", 10)
 	imp_in.reagents.add_reagent("omnizine", 10)
@@ -54,6 +57,7 @@
 	uses = 3
 
 /obj/item/implant/emp/activate()
+	. = ..()
 	uses--
 	empulse(imp_in, 3, 5)
 	if(!uses)
@@ -88,6 +92,7 @@
 	icon_state = "walkietalkie"
 
 /obj/item/implant/radio/activate()
+	. = ..()
 	// needs to be GLOB.deep_inventory_state otherwise it won't open
 	radio.ui_interact(usr, "main", null, FALSE, null, GLOB.deep_inventory_state)
 

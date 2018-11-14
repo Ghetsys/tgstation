@@ -12,6 +12,7 @@
 	armor = list("melee" = 40, "bullet" = 20, "laser" = 10, "energy" = 20, "bomb" = 40, "bio" = 0, "rad" = 0, "fire" = 100, "acid" = 100)
 	max_equip = 6
 	wreckage = /obj/structure/mecha_wreckage/ripley
+	internals_req_access = list(ACCESS_MECH_ENGINE, ACCESS_MECH_SCIENCE, ACCESS_MECH_MINING)
 	var/list/cargo = new
 	var/cargo_capacity = 15
 	var/hides = 0
@@ -88,6 +89,18 @@
 	var/obj/item/mecha_parts/mecha_equipment/ME = new /obj/item/mecha_parts/mecha_equipment/hydraulic_clamp/kill
 	ME.attach(src)
 
+/obj/mecha/working/ripley/deathripley/real
+	desc = "OH SHIT IT'S THE DEATHSQUAD WE'RE ALL GONNA DIE. FOR REAL"
+
+/obj/mecha/working/ripley/deathripley/real/Initialize()
+	. = ..()
+	for(var/obj/item/mecha_parts/mecha_equipment/E in equipment)
+		E.detach()
+		qdel(E)
+	equipment.Cut()
+	var/obj/item/mecha_parts/mecha_equipment/ME = new /obj/item/mecha_parts/mecha_equipment/hydraulic_clamp/kill/real
+	ME.attach(src)
+
 /obj/mecha/working/ripley/mining
 	desc = "An old, dusty mining Ripley."
 	name = "\improper APLU \"Miner\""
@@ -134,7 +147,7 @@
 			occupant_message("<span class='notice'>You unload [O].</span>")
 			O.forceMove(drop_location())
 			cargo -= O
-			log_message("Unloaded [O]. Cargo compartment capacity: [cargo_capacity - src.cargo.len]")
+			log_message("Unloaded [O]. Cargo compartment capacity: [cargo_capacity - src.cargo.len]", LOG_MECHA)
 	return
 
 

@@ -54,7 +54,7 @@
 		else
 			to_chat(user, "<span class='warning'>You need a tighter grip!</span>")
 
-	else if(cistern && !open)
+	else if(cistern && !open && user.CanReach(src))
 		if(!contents.len)
 			to_chat(user, "<span class='notice'>The cistern is empty.</span>")
 		else
@@ -75,7 +75,7 @@
 
 
 /obj/structure/toilet/attackby(obj/item/I, mob/living/user, params)
-	if(istype(I, /obj/item/crowbar))
+	if(I.tool_behaviour == TOOL_CROWBAR)
 		to_chat(user, "<span class='notice'>You start to [cistern ? "replace the lid on the cistern" : "lift the lid off the cistern"]...</span>")
 		playsound(loc, 'sound/effects/stonedoor_openclose.ogg', 50, 1)
 		if(I.use_tool(src, user, 30))
@@ -131,9 +131,9 @@
 	var/exposed = 0 // can you currently put an item inside
 	var/obj/item/hiddenitem = null // what's in the urinal
 
-/obj/structure/urinal/New()
-	..()
-	hiddenitem = new /obj/item/reagent_containers/food/urinalcake
+/obj/structure/urinal/Initialize()
+	. = ..()
+	hiddenitem = new /obj/item/reagent_containers/food/snacks/urinalcake
 
 /obj/structure/urinal/attack_hand(mob/user)
 	. = ..()
@@ -181,6 +181,8 @@
 		return ..()
 
 /obj/structure/urinal/screwdriver_act(mob/living/user, obj/item/I)
+	if(..())
+		return TRUE
 	to_chat(user, "<span class='notice'>You start to [exposed ? "screw the cap back into place" : "unscrew the cap to the drain protector"]...</span>")
 	playsound(loc, 'sound/effects/stonedoor_openclose.ogg', 50, 1)
 	if(I.use_tool(src, user, 20))
@@ -191,15 +193,16 @@
 	return TRUE
 
 
-/obj/item/reagent_containers/food/urinalcake
+/obj/item/reagent_containers/food/snacks/urinalcake
 	name = "urinal cake"
 	desc = "The noble urinal cake, protecting the station's pipes from the station's pee. Do not eat."
 	icon = 'icons/obj/items_and_weapons.dmi'
 	icon_state = "urinalcake"
 	w_class = WEIGHT_CLASS_TINY
 	list_reagents = list("chlorine" = 3, "ammonia" = 1)
+	foodtype = TOXIC | GROSS
 
-/obj/item/reagent_containers/food/urinalcake/attack_self(mob/living/user)
+/obj/item/reagent_containers/food/snacks/urinalcake/attack_self(mob/living/user)
 	user.visible_message("<span class='notice'>[user] squishes [src]!</span>", "<span class='notice'>You squish [src].</span>", "<i>You hear a squish.</i>")
 	icon_state = "urinalcake_squish"
 	addtimer(VARSET_CALLBACK(src, icon_state, "urinalcake"), 8)
@@ -238,10 +241,11 @@
 	update_icon()
 	add_fingerprint(M)
 	if(on)
+		START_PROCESSING(SSmachines, src)
 		soundloop.start()
 		wash_turf()
 		for(var/atom/movable/G in loc)
-			G.SendSignal(COMSIG_COMPONENT_CLEAN_ACT, CLEAN_WEAK)
+			SEND_SIGNAL(G, COMSIG_COMPONENT_CLEAN_ACT, CLEAN_WEAK)
 			if(isliving(G))
 				var/mob/living/L = G
 				wash_mob(L)
@@ -254,7 +258,7 @@
 			tile.MakeSlippery(TURF_WET_WATER, min_wet_time = 5 SECONDS, wet_time_to_add = 1 SECONDS)
 
 /obj/machinery/shower/attackby(obj/item/I, mob/user, params)
-	if(I.type == /obj/item/analyzer)
+	if(I.tool_behaviour == TOOL_ANALYZER)
 		to_chat(user, "<span class='notice'>The water temperature seems to be [watertemp].</span>")
 	else
 		return ..()
@@ -314,7 +318,7 @@
 
 
 /obj/machinery/shower/proc/wash_obj(obj/O)
-	. = O.SendSignal(COMSIG_COMPONENT_CLEAN_ACT, CLEAN_WEAK)
+	. = SEND_SIGNAL(O, COMSIG_COMPONENT_CLEAN_ACT, CLEAN_WEAK)
 	O.remove_atom_colour(WASHABLE_COLOUR_PRIORITY)
 	if(isitem(O))
 		var/obj/item/I = O
@@ -325,7 +329,7 @@
 /obj/machinery/shower/proc/wash_turf()
 	if(isturf(loc))
 		var/turf/tile = loc
-		tile.SendSignal(COMSIG_COMPONENT_CLEAN_ACT, CLEAN_WEAK)
+		SEND_SIGNAL(tile, COMSIG_COMPONENT_CLEAN_ACT, CLEAN_WEAK)
 		tile.remove_atom_colour(WASHABLE_COLOUR_PRIORITY)
 		for(var/obj/effect/E in tile)
 			if(is_cleanable(E))
@@ -333,12 +337,12 @@
 
 
 /obj/machinery/shower/proc/wash_mob(mob/living/L)
-	L.SendSignal(COMSIG_COMPONENT_CLEAN_ACT, CLEAN_WEAK)
+	SEND_SIGNAL(L, COMSIG_COMPONENT_CLEAN_ACT, CLEAN_WEAK)
 	L.wash_cream()
 	L.ExtinguishMob()
 	L.adjust_fire_stacks(-20) //Douse ourselves with water to avoid fire more easily
 	L.remove_atom_colour(WASHABLE_COLOUR_PRIORITY)
-	L.SendSignal(COMSIG_ADD_MOOD_EVENT, "shower", /datum/mood_event/nice_shower)
+	SEND_SIGNAL(L, COMSIG_ADD_MOOD_EVENT, "shower", /datum/mood_event/nice_shower)
 	if(iscarbon(L))
 		var/mob/living/carbon/M = L
 		. = TRUE
@@ -378,7 +382,7 @@
 			else if(H.w_uniform && wash_obj(H.w_uniform))
 				H.update_inv_w_uniform()
 			if(washgloves)
-				H.SendSignal(COMSIG_COMPONENT_CLEAN_ACT, CLEAN_STRENGTH_BLOOD)
+				SEND_SIGNAL(H, COMSIG_COMPONENT_CLEAN_ACT, CLEAN_STRENGTH_BLOOD)
 			if(H.shoes && washshoes && wash_obj(H.shoes))
 				H.update_inv_shoes()
 			if(H.wear_mask && washmask && wash_obj(H.wear_mask))
@@ -395,9 +399,9 @@
 		else
 			if(M.wear_mask && wash_obj(M.wear_mask))
 				M.update_inv_wear_mask(0)
-			M.SendSignal(COMSIG_COMPONENT_CLEAN_ACT, CLEAN_STRENGTH_BLOOD)
+			SEND_SIGNAL(M, COMSIG_COMPONENT_CLEAN_ACT, CLEAN_STRENGTH_BLOOD)
 	else
-		L.SendSignal(COMSIG_COMPONENT_CLEAN_ACT, CLEAN_STRENGTH_BLOOD)
+		SEND_SIGNAL(L, COMSIG_COMPONENT_CLEAN_ACT, CLEAN_STRENGTH_BLOOD)
 
 /obj/machinery/shower/proc/contamination_cleanse(atom/movable/thing)
 	var/datum/component/radioactive/healthy_green_glow = thing.GetComponent(/datum/component/radioactive)
@@ -407,7 +411,7 @@
 	if(strength <= RAD_BACKGROUND_RADIATION)
 		qdel(healthy_green_glow)
 		return
-	healthy_green_glow.strength = max(strength-1, 0)
+	healthy_green_glow.strength -= max(0, (healthy_green_glow.strength - (RAD_BACKGROUND_RADIATION * 2)) * 0.2)
 
 /obj/machinery/shower/process()
 	if(on)
@@ -418,6 +422,8 @@
 			else if(isobj(AM))
 				wash_obj(AM)
 			contamination_cleanse(AM)
+	else
+		return PROCESS_KILL
 
 /obj/machinery/shower/deconstruct(disassembled = TRUE)
 	new /obj/item/stack/sheet/metal (loc, 3)
@@ -493,7 +499,7 @@
 			H.regenerate_icons()
 		user.drowsyness = max(user.drowsyness - rand(2,3), 0) //Washing your face wakes you up if you're falling asleep
 	else
-		user.SendSignal(COMSIG_COMPONENT_CLEAN_ACT, CLEAN_STRENGTH_BLOOD)
+		SEND_SIGNAL(user, COMSIG_COMPONENT_CLEAN_ACT, CLEAN_STRENGTH_BLOOD)
 
 /obj/structure/sink/attackby(obj/item/O, mob/living/user, params)
 	if(busy)
@@ -516,7 +522,7 @@
 			if(B.cell.charge > 0 && B.status == 1)
 				flick("baton_active", src)
 				var/stunforce = B.stunforce
-				user.Knockdown(stunforce)
+				user.Paralyze(stunforce)
 				user.stuttering = stunforce/20
 				B.deductcharge(B.hitcost)
 				user.visible_message("<span class='warning'>[user] shocks [user.p_them()]self while attempting to wash the active [B.name]!</span>", \
@@ -549,7 +555,7 @@
 			busy = FALSE
 			return 1
 		busy = FALSE
-		O.SendSignal(COMSIG_COMPONENT_CLEAN_ACT, CLEAN_STRENGTH_BLOOD)
+		SEND_SIGNAL(O, COMSIG_COMPONENT_CLEAN_ACT, CLEAN_STRENGTH_BLOOD)
 		O.acid_level = 0
 		create_reagents(5)
 		reagents.add_reagent(dispensedreagent, 5)

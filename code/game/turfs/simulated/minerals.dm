@@ -6,7 +6,7 @@
 	icon_state = "rock"
 	var/smooth_icon = 'icons/turf/smoothrocks.dmi'
 	smooth = SMOOTH_MORE|SMOOTH_BORDER
-	canSmoothWith
+	canSmoothWith = null
 	baseturfs = /turf/open/floor/plating/asteroid/airless
 	initial_gas_mix = "TEMP=2.7"
 	opacity = 1
@@ -27,8 +27,9 @@
 /turf/closed/mineral/Initialize()
 	if (!canSmoothWith)
 		canSmoothWith = list(/turf/closed/mineral, /turf/closed/indestructible)
-	pixel_y = -4
-	pixel_x = -4
+	var/matrix/M = new
+	M.Translate(-4, -4)
+	transform = M
 	icon = smooth_icon
 	. = ..()
 	if (mineralType && mineralAmt && spread && spreadChance)
@@ -94,7 +95,7 @@
 		to_chat(M, "<span class='notice'>You tunnel into the rock.</span>")
 		gets_drilled(M)
 
-/turf/closed/mineral/CollidedWith(atom/movable/AM)
+/turf/closed/mineral/Bumped(atom/movable/AM)
 	..()
 	if(ishuman(AM))
 		var/mob/living/carbon/human/H = AM
@@ -130,17 +131,17 @@
 	T.ChangeTurf(type)
 
 /turf/closed/mineral/random
-	var/mineralSpawnChanceList
+	var/list/mineralSpawnChanceList = list(/turf/closed/mineral/uranium = 5, /turf/closed/mineral/diamond = 1, /turf/closed/mineral/gold = 10,
+		/turf/closed/mineral/silver = 12, /turf/closed/mineral/plasma = 20, /turf/closed/mineral/iron = 40, /turf/closed/mineral/titanium = 11,
+		/turf/closed/mineral/gibtonite = 4, /turf/open/floor/plating/asteroid/airless/cave = 2, /turf/closed/mineral/bscrystal = 1)
 		//Currently, Adamantine won't spawn as it has no uses. -Durandan
 	var/mineralChance = 13
 	var/display_icon_state = "rock"
 
 /turf/closed/mineral/random/Initialize()
-	if (!mineralSpawnChanceList)
-		mineralSpawnChanceList = list(
-			/turf/closed/mineral/uranium = 5, /turf/closed/mineral/diamond = 1, /turf/closed/mineral/gold = 10,
-			/turf/closed/mineral/silver = 12, /turf/closed/mineral/plasma = 20, /turf/closed/mineral/iron = 40, /turf/closed/mineral/titanium = 11,
-			/turf/closed/mineral/gibtonite = 4, /turf/open/floor/plating/asteroid/airless/cave = 2, /turf/closed/mineral/bscrystal = 1)
+
+	mineralSpawnChanceList = typelist("mineralSpawnChanceList", mineralSpawnChanceList)
+
 	if (display_icon_state)
 		icon_state = display_icon_state
 	. = ..()
@@ -450,20 +451,15 @@
 		desc = "An active gibtonite reserve. Run!"
 		stage = GIBTONITE_ACTIVE
 		visible_message("<span class='danger'>There was gibtonite inside! It's going to explode!</span>")
-		var/turf/bombturf = get_turf(src)
 
 		var/notify_admins = 0
 		if(z != 5)
-			notify_admins = 1
-			if(!triggered_by_explosion)
-				message_admins("[ADMIN_LOOKUPFLW(user)] has triggered a gibtonite deposit reaction at [ADMIN_VERBOSEJMP(bombturf)].")
-			else
-				message_admins("An explosion has triggered a gibtonite deposit reaction at [ADMIN_VERBOSEJMP(bombturf)].")
+			notify_admins = TRUE
 
 		if(!triggered_by_explosion)
-			log_game("[key_name(user)] has triggered a gibtonite deposit reaction at [AREACOORD(bombturf)].")
+			log_bomber(user, "has trigged a gibtonite deposit reaction via", src, null, notify_admins)
 		else
-			log_game("An explosion has triggered a gibtonite deposit reaction at [AREACOORD(bombturf)]")
+			log_bomber(null, "An explosion has triggered a gibtonite deposit reaction via", src, null, notify_admins)
 
 		countdown(notify_admins)
 
