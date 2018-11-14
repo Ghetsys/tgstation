@@ -6,6 +6,8 @@
 
 // BEGIN_FILE_DIR
 #define FILE_DIR .
+#define FILE_DIR "data"
+#define FILE_DIR "data/spritesheets"
 #define FILE_DIR "goon"
 #define FILE_DIR "goon/icons"
 #define FILE_DIR "goon/icons/obj"
